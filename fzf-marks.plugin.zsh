@@ -45,8 +45,12 @@ function jump() {
         nl| column -t|
         wfxr::bookmarks-fzf --query="$*" -1|
         sed 's#.*->  ##')
-    [[ -n "$target" ]] && cd "$target"
-    zle && zle redraw-prompt
+    if [[ -n "$target" ]]; then
+        cd "$target"
+        zle && zle redraw-prompt
+    else
+        zle redisplay # Just redisplay if no jump to do
+    fi
 }
 
 # Ensure precmds are run after cd
