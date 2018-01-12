@@ -47,6 +47,7 @@ function jump() {
         sed 's#.*->  ##')
     if [[ -n "$target" ]]; then
         cd "$target"
+        unset target
         zle && zle redraw-prompt
     else
         zle redisplay # Just redisplay if no jump to do
