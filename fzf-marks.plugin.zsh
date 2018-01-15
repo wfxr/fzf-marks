@@ -40,15 +40,18 @@ function dmark()  {
     zle && zle reset-prompt
 }
 
+# TODO: Check invalid marks and prompt user to delete them
+function checkmark() {
+}
+
 function jump() {
+    local target
     target=$(sed 's#: # -> #' "$BOOKMARKS_FILE"|
         nl| column -t|
         wfxr::bookmarks-fzf --query="$*" -1|
         sed 's#.*->  ##')
-    if [[ -n "$target" ]]; then
-        cd "$target"
-        unset target
-        zle && zle redraw-prompt
+    if [[ -d "$target" ]]; then
+        cd "$target" && zle && zle redraw-prompt
     else
         zle redisplay # Just redisplay if no jump to do
     fi
