@@ -28,9 +28,7 @@ function mark() {
 
 function dmark()  {
     local line
-    line=$(sed 's#: # -> #' "$BOOKMARKS_FILE"|
-        nl| column -t|
-        wfxr::bookmarks-fzf --query="$*" -m)
+    line=$(lmarks| wfxr::bookmarks-fzf --query="$*" -m)
 
     if [[ -n $line ]]; then
         echo "$line" |awk '{print $1}'| xargs -I{} sed -i "{}d" "$BOOKMARKS_FILE"
@@ -40,32 +38,26 @@ function dmark()  {
     zle && zle reset-prompt
 }
 
+# List all marks
+function lmarks() {
+    sed 's#: # -> #' "$BOOKMARKS_FILE"| nl| column -t
+}
+
 # TODO: Check invalid marks and prompt user to delete them
-function checkmark() {
+function checkmarks() {
 }
 
 function jump() {
     local target
-    target=$(sed 's#: # -> #' "$BOOKMARKS_FILE"|
-        nl| column -t|
+    target=$(lmarks |
         wfxr::bookmarks-fzf --query="$*" -1|
         sed 's#.*->  ##')
     if [[ -d "$target" ]]; then
-        cd "$target" && zle && zle redraw-prompt
+        cd "$target" && zle reset-prompt
     else
         zle redisplay # Just redisplay if no jump to do
     fi
 }
-
-# Ensure precmds are run after cd
-function redraw-prompt() {
-    local precmd
-    for precmd in $precmd_functions; do
-        $precmd
-    done
-    zle reset-prompt
-}
-zle -N redraw-prompt
 
 zle -N jump
 bindkey ${FZF_MARKS_JUMP:-'^g'} jump
