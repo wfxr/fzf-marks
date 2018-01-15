@@ -4,11 +4,17 @@ This tiny script, inspired by [zshmarks](https://github.com/jocelynmallon/zshmar
 ![](https://raw.github.com/uvaes/fuzzy-zsh-marks/demo/demo.gif)
 
 ## Installation
-[fzf](https://github.com/junegunn/fzf) is required to use this plugin. Once this condition is met, it is sufficient to source the script from your shell configuration file. If you are using zsh, the plugin is also compatible with the main plugin managers. In the case of zgen, it can be loaded by adding
+[fzf](https://github.com/junegunn/fzf) is required to use this plugin. Once this condition is met, it is sufficient to source the script from your shell configuration file. If you are using zsh, the plugin is also compatible with the main plugin managers. 
+
+### for zplug
 ```
-    zgen load uvaes/fzf-marks
+    zplug wfxr/fzf-marks
 ```
-in the plugin list. 
+
+### for zgen
+```
+    zgen load wfxr/fzf-marks
+```
 
 ## Usage
 Most of the key mappings in the search window are the default fzf ones. The most relevant ones are:
@@ -22,6 +28,7 @@ In Zsh or Bash, the script creates three commands:
 - **mark** to create a new bookmark. For example, `mark work` creates a bookmark labeled work.
 - **jump** to jump to a given bookmark using fzf. By default, the script binds this function to **ctrl-g**.
 - **dmark** to delete marks toggled for deletion. 
+- **lmarks** to list all registered marks
 
 ## Sources
 
