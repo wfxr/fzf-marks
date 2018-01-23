@@ -38,4 +38,5 @@ In Zsh or Bash, the script creates three commands:
 ## Author
 
 Urbain Vaes
+
 Wenxuan Zhang
