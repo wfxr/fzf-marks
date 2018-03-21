@@ -18,6 +18,7 @@ wfxr::bookmarks-fzf() {
 }
 
 function mark() {
+    [[ "$#" -eq 0 ]] && wfxr::mark_usage && return 1
     local mark_to_add
     mark_to_add=$(echo "$*: $(pwd)")
     echo "${mark_to_add}" >> "${BOOKMARKS_FILE}"
@@ -26,16 +27,11 @@ function mark() {
     echo "${mark_to_add}"
 }
 
-function dmark()  {
-    local line
-    line=$(lmarks| wfxr::bookmarks-fzf --query="$*" -m)
+function dmarks()  {
+    local lines
+    lines=$(lmarks| wfxr::bookmarks-fzf --query="$*" -m)
 
-    if [[ -n $line ]]; then
-        echo "$line" |awk '{print $1}'| xargs -I{} sed -i "{}d" "$BOOKMARKS_FILE"
-        echo "** The following marks have been deleted **"
-        echo "$line"
-    fi
-    zle && zle reset-prompt
+    wfxr::bookmarks-delete "$lines"
 }
 
 # List all marks
@@ -43,8 +39,40 @@ function lmarks() {
     sed 's#: # -> #' "$BOOKMARKS_FILE"| nl| column -t
 }
 
-# TODO: Check invalid marks and prompt user to delete them
-function checkmarks() {
+# Prompt user to delete invalid marks
+function cleanmarks() {
+    local invalid_marks
+    invalid_marks=$(lmarks |
+        wfxr::bookmarks-invalid |
+        wfxr::bookmarks-fzf -m --header='** The following marks are not invalid anymore **')
+    wfxr::bookmarks-delete "$invalid_marks"
+}
+
+# Delete selected bookmarks
+function wfxr::bookmarks-delete() {
+    local lines
+    lines="$*"
+    if [[ -n $lines ]]; then
+        echo "$lines" |awk '{print $1}'| sed 's/$/d/'| paste -sd';'| xargs -I{} sed -i "{}" "$BOOKMARKS_FILE"
+        echo "** The following marks have been deleted **"
+        echo "$lines"
+    fi
+}
+
+# Show usage for function mark
+function wfxr::mark_usage() {
+    echo "Usage: mark <bookmark>" >&2
+    echo "   eg: mark downloads"
+}
+
+# List invalid marks
+function wfxr::bookmarks-invalid() {
+    local line
+    local directory
+    while read line; do
+        directory=$(echo "$line" |sed 's#.*->  ##')
+        test -d "$directory" || echo "$line"
+    done
 }
 
 function jump() {
@@ -61,7 +89,3 @@ function jump() {
 
 zle -N jump
 bindkey ${FZF_MARKS_JUMP:-'^g'} jump
-if [ "${FZF_MARKS_DMARK}" ]; then
-    zle -N dmark
-    bindkey ${FZF_MARKS_DMARK} dmark
-fi
