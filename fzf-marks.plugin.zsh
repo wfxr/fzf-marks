@@ -35,16 +35,32 @@ function dmarks()  {
 }
 
 # List all marks
-function lmarks() {
+function wfxr::lmarks() {
     sed 's#: # -> #' "$BOOKMARKS_FILE"| nl| column -t
 }
 
+function lmarks() {
+    wfxr::lmarks | wfxr::bookmarks-colorize
+}
+
+function wfxr::bookmarks-colorize() {
+    local field='\(\S\+\s*\)'
+    local esc=$(printf '\033')
+    local N="${esc}[0m"
+    local R="${esc}[31m"
+    local G="${esc}[32m"
+    local Y="${esc}[33m"
+    local B="${esc}[34m"
+    sed "s#^${field}${field}${field}${field}#$Y\1$R\2$N\3$B\4$N#"
+}
+
 # Prompt user to delete invalid marks
-function cleanmarks() {
+function cmarks() {
     local invalid_marks
-    invalid_marks=$(lmarks |
+    invalid_marks=$(wfxr::lmarks |
         wfxr::bookmarks-invalid |
-        wfxr::bookmarks-fzf -m --header='** The following marks are not invalid anymore **')
+        wfxr::bookmarks-colorize |
+        wfxr::bookmarks-fzf -0 -m --header='** The following marks are not invalid anymore **')
     wfxr::bookmarks-delete "$invalid_marks"
 }
 
@@ -78,6 +94,7 @@ function wfxr::bookmarks-invalid() {
 function jump() {
     local target
     target=$(lmarks |
+        wfxr::bookmarks-colorize |
         wfxr::bookmarks-fzf --query="$*" -1|
         sed 's#.*->  ##')
     if [[ -d "$target" ]]; then
