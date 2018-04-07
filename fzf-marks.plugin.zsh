@@ -51,7 +51,10 @@ function wfxr::bookmarks-colorize() {
     local G="${esc}[32m"
     local Y="${esc}[33m"
     local B="${esc}[34m"
-    sed "s#^${field}${field}${field}${field}#$Y\1$R\2$N\3$B\4$N#"
+    local pattern="s#^${field}${field}${field}${field}#$Y\1$R\2$N\3$B\4$N#"
+    # Use GNU sed if possible
+    # BSD sed(default sed on mac) can not display color by this pattern
+    (( $+commands[gsed] )) && gsed "$pattern" || sed "$pattern"
 }
 
 # Prompt user to delete invalid marks
