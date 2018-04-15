@@ -1,6 +1,14 @@
 # fzf-marks
 This tiny script, inspired by [zshmarks](https://github.com/jocelynmallon/zshmarks), can be used to create, delete, and navigate marks in Bash and Zsh. It is based on the command-line fuzzy-finder [fzf](https://github.com/junegunn/fzf) written by Junegunn Choi. Although the script is very short and simple, it is very convenient and can very quickly become an important part of your workflow.
 
+## Deprecated
+
+This project is **deprecated** and will not be maintained any longer!
+
+The new repo [formarks](https://github.com/wfxr/formarks) does the same work but remove the `bash` support. If you are a bash user, please go to the original repo.
+
+Thank you for your attention.
+
 ![](https://raw.github.com/uvaes/fuzzy-zsh-marks/demo/demo.gif)
 
 ## Installation
